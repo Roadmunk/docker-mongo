@@ -7,8 +7,11 @@ if [ -n "$LOCAL_DEVICE" ]; then
 fi
 
 mongod "$@" &
-sleep 10
+PID=$!
 
+trap 'kill -INT $PID' EXIT
+
+sleep 10
 mongo --eval "rs.initiate()"
 
 wait
