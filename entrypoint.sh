@@ -6,7 +6,9 @@ if [ -n "$LOCAL_DEVICE" ]; then
 	mount $LOCAL_DEVICE /data/db
 fi
 
-mongod "$@" &
+chown -R mongodb /data/configdb /data/db
+
+gosu mongodb mongod "$@" &
 PID=$!
 
 trap 'kill -INT $PID' EXIT
