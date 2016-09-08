@@ -15,7 +15,7 @@ trap 'kill -INT $PID' EXIT
 
 # COULDDO: Read the port out of the environment?
 # COULDDO: Read timeout limit from the environment?
-/usr/local/bin/wait-for-it.sh -t 60 localhost:27017
+/usr/local/bin/wait-for-it.sh --timeout=60 localhost:27017
 
 if [ $? -eq 0 ]
 then
