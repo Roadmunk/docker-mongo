@@ -8,6 +8,7 @@ fi
 
 chown -R mongodb /data/configdb /data/db
 
+# COULDDO: Read the replica set name out of the environment?
 gosu mongodb mongod "$@" &
 PID=$!
 
