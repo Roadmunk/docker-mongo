@@ -3,7 +3,8 @@ E_UNAVAILABLE=69
 set -e
 
 if [ -n "$LOCAL_DEVICE" ]; then
-	mount $LOCAL_DEVICE /data/db
+  # Mount LOCAL_DEVICE to /data/db, setting filesystem type and mount options if provided
+	mount ${LOCAL_DEVICE_FS:+-t $LOCAL_DEVICE_FS} ${LOCAL_DEVICE_FS_OPTS:+-o $LOCAL_DEVICE_FS_OPTS} $LOCAL_DEVICE /data/db 
 fi
 
 chown -R mongodb /data/configdb /data/db
