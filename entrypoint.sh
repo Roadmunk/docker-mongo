@@ -21,8 +21,10 @@ trap 'kill -INT $PID' EXIT
 
 if [ $? -eq 0 ]
 then
-  echo Initializing replica set...
-  mongo --eval "rs.initiate()"
+  if [ -z "$SKIP_REPLICA_SET_INIT" ]; then
+    echo Initializing replica set...
+    mongo --eval "rs.initiate()"
+  fi
   wait
 else
   echo "Timed out waiting for mongo to start."
