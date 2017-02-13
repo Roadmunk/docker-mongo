@@ -7,10 +7,18 @@ if [ -n "$LOCAL_DEVICE" ]; then
 	mount ${LOCAL_DEVICE_FS:+-t $LOCAL_DEVICE_FS} ${LOCAL_DEVICE_FS_OPTS:+-o $LOCAL_DEVICE_FS_OPTS} $LOCAL_DEVICE /data/db 
 fi
 
+if [ -z "$REPL_SET_NAME" ]; then
+  REPL_SET_NAME=development
+fi
+
 chown -R mongodb /data/configdb /data/db
 
-# COULDDO: Read the replica set name out of the environment?
-gosu mongodb mongod "$@" &
+OPTIONS=
+if [ -n "$REPL_SET_INIT" ]; then
+  OPTIONS="--replSet=$REPL_SET_NAME"
+fi
+
+gosu mongodb mongod $OPTIONS $@ &
 PID=$!
 
 trap 'kill -INT $PID' EXIT
@@ -21,9 +29,14 @@ trap 'kill -INT $PID' EXIT
 
 if [ $? -eq 0 ]
 then
-  if [ -z "$SKIP_REPLICA_SET_INIT" ]; then
-    echo Initializing replica set...
+  if [ "$REPL_SET_INIT" == "initiate" ]; then
+    echo Initiating replica set...
     mongo --eval "rs.initiate()"
+  elif [ "$REPL_SET_INIT" == "reconfig" ]; then
+    echo Reconfiguring replica set...
+    mongo --eval "rs.reconfig({ _id : \'$REPL_SET_NAME\', version : 1, members : [ { _id : 1, host: \'localhost\' } ]}, { force : true })"
+  else
+    echo Skipping replica set initialization...
   fi
   wait
 else
