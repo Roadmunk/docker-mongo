@@ -34,7 +34,14 @@ then
     mongo --eval "rs.initiate()"
   elif [ "$REPL_SET_INIT" == "reconfig" ]; then
     echo Reconfiguring replica set...
-    mongo --eval "rs.reconfig({ _id : \'$REPL_SET_NAME\', version : 1, members : [ { _id : 1, host: \'localhost\' } ]}, { force : true })"
+
+    until mongo --quiet --eval "printjson(rs.status())" | grep "uptime"
+    do
+      echo "Waiting for mongo..."
+      sleep 5
+    done
+
+    mongo --eval "rs.reconfig({ _id : '$REPL_SET_NAME', version : 1, members : [ { _id : 1, host: 'localhost' } ]}, { force : true })"
   else
     echo Skipping replica set initialization...
   fi
