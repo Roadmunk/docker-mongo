@@ -4,7 +4,7 @@ set -e
 
 if [ -n "$LOCAL_DEVICE" ]; then
   # Mount LOCAL_DEVICE to /data/db, setting filesystem type and mount options if provided
-	mount ${LOCAL_DEVICE_FS:+-t $LOCAL_DEVICE_FS} ${LOCAL_DEVICE_FS_OPTS:+-o $LOCAL_DEVICE_FS_OPTS} $LOCAL_DEVICE /data/db 
+  mount ${LOCAL_DEVICE_FS:+-t $LOCAL_DEVICE_FS} ${LOCAL_DEVICE_FS_OPTS:+-o $LOCAL_DEVICE_FS_OPTS} $LOCAL_DEVICE /data/db 
 fi
 
 if [ -z "$REPL_SET_NAME" ]; then
