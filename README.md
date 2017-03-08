@@ -2,6 +2,7 @@ This variant of the official [mongo](https://hub.docker.com/_/mongo/) image prov
 
  * replica set configuration required for proper operation
  * optional mounting of a host storage device useful when storing the mongodb data on an Amazon EBS volume
+ * a healthcheck that returns ServerStatus
 
 #### Environment Variables
 
