@@ -1,6 +1,6 @@
 FROM mongo:3.4.4
 
-ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/a454892f3c2ebbc22bd15e446415b8fcb7c1cfa4/wait-for-it.sh /usr/local/bin/
+ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/a2acebe3f5513642f19c0d6bed565b23096eac60/wait-for-it.sh /usr/local/bin/
 RUN chmod a+rx /usr/local/bin/wait-for-it.sh
 
 COPY *.sh /usr/local/bin/
