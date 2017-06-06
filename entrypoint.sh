@@ -57,7 +57,7 @@ case "$REPL_SET_INIT" in
         echo "Skipping replica set arbiter ${i} due to timeout!"
       fi
     fi
-  ;;
+    ;;
 
   reconfig)
     echo Reconfiguring replica set...
