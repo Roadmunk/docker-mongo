@@ -17,11 +17,13 @@ fi
 chown -R mongodb /data/configdb /data/db
 
 OPTIONS=
-if [[ -n "$REPL_SET_INIT" ]]; then
+if [[ -n "${REPL_SET_INIT+1}" ]]; then
   OPTIONS="--replSet=$REPL_SET_NAME"
   if [[ "$REPL_SET_INIT" == "join_arbiter" ]]; then
     OPTIONS="--nojournal --smallfiles ${OPTIONS}"
-  fi
+	fi
+else
+  REPL_SET_INIT="none"
 fi
 
 gosu mongodb mongod $OPTIONS $@ &
