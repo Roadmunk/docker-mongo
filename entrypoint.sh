@@ -18,10 +18,14 @@ chown -R mongodb /data/configdb /data/db
 
 OPTIONS=
 if [[ -n "${REPL_SET_INIT+1}" ]]; then
-  OPTIONS="--replSet=$REPL_SET_NAME"
-  if [[ "$REPL_SET_INIT" == "join_arbiter" ]]; then
-    OPTIONS="--nojournal --smallfiles ${OPTIONS}"
-	fi
+  if [[ "${REPL_SET_INIT}" == "queryable_backup" ]]; then
+    OPTIONS="--queryableBackupMode"
+  else
+    OPTIONS="--replSet=$REPL_SET_NAME"
+    if [[ "${REPL_SET_INIT}" == "join_arbiter" ]]; then
+      OPTIONS="--nojournal --smallfiles ${OPTIONS}"
+		fi
+  fi
 else
   REPL_SET_INIT="none"
 fi
@@ -69,7 +73,7 @@ case "$REPL_SET_INIT" in
     ;;
 
   reconfig)
-    echo Reconfiguring replica set...
+    echo "Reconfiguring replica set..."
     # Try to read the 'uptime' key of the 0th member of the rs status command, and check if it is above 0
     until [[ $(mongo --quiet --eval 'JSON.stringify(rs.status())' | jq '.members[0].uptime//-1') -gt 0 ]]
     do
