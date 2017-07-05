@@ -1,6 +1,7 @@
 #! /bin/bash
 set -euo pipefail
 E_UNAVAILABLE=69
+STARTUP_TIMEOUT="${STARTUP_TIMEOUT:-60}"
 
 # Mount LOCAL_DEVICE to /data/db, setting filesystem type and mount options if provided
 if [[ -n ${LOCAL_DEVICE:-} ]]; then
@@ -30,7 +31,7 @@ trap 'kill -INT $PID' EXIT
 
 # COULDDO: Read the port out of the environment?
 # COULDDO: Read timeout limit from the environment?
-if !  /usr/local/bin/wait-for-it.sh --timeout=60 localhost:27017; then
+if !  /usr/local/bin/wait-for-it.sh --timeout=$STARTUP_TIMEOUT localhost:27017; then
   echo "Timed out waiting for mongo to start."
   exit $E_UNAVAILABLE
 fi
