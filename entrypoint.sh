@@ -5,6 +5,12 @@ E_UNAVAILABLE=69
 # Mount LOCAL_DEVICE to /data/db, setting filesystem type and mount options if provided
 if [[ -n ${LOCAL_DEVICE:-} ]]; then
   mount ${LOCAL_DEVICE_FS:+-t $LOCAL_DEVICE_FS} ${LOCAL_DEVICE_FS_OPTS:+-o $LOCAL_DEVICE_FS_OPTS} $LOCAL_DEVICE /data/db
+
+	# HACK: This is a not a great idea.
+	# However, we can assert that our own snapshots were properly made, and cross
+	# our fingers and just hope that the server using this option knows what it
+	# is doing and doesn't spawn two mongos at once.
+	rm -f /data/db/mongod.lock
 fi
 
 chown -R mongodb /data/configdb /data/db
