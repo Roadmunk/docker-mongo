@@ -36,7 +36,7 @@ PID=$!
 trap 'kill -INT $PID' EXIT
 
 # COULDDO: Read the port out of the environment?
-if !  /usr/local/bin/wait-for-it.sh --timeout=$STARTUP_TIMEOUT localhost:27017; then
+if !  /usr/local/bin/wait-for-it.sh --timeout=${STARTUP_TIMEOUT} localhost:27017; then
   echo "Timed out waiting for mongo to start."
   exit $E_UNAVAILABLE
 fi
@@ -56,13 +56,14 @@ case "$REPL_SET_INIT" in
     done
 
     for i in "${REPL_SET_MEMBERS[@]}"; do
-      if /usr/local/bin/wait-for-it.sh --timeout=60 ${i}:27017; then mongo --eval "rs.add(\"$i\")"
+      if /usr/local/bin/wait-for-it.sh --timeout=${STARTUP_TIMEOUT} ${i}:27017; then
+        mongo --eval "rs.add(\"$i\")"
       else
         echo "Skipping replica set member ${i} due to timeout!"
       fi
     done
     if [[ -n ${REPL_SET_ARBITER:-} ]]; then
-      if /usr/local/bin/wait-for-it.sh --timeout=60 ${REPL_SET_ARBITER}:27017; then
+      if /usr/local/bin/wait-for-it.sh --timeout=${STARTUP_TIMEOUT} ${REPL_SET_ARBITER}:27017; then
         mongo --eval "rs.addArb(\"${REPL_SET_ARBITER}\")"
       else
         echo "Skipping replica set arbiter ${i} due to timeout!"
