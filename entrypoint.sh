@@ -7,11 +7,11 @@ STARTUP_TIMEOUT="${STARTUP_TIMEOUT:-60}"
 if [[ -n ${LOCAL_DEVICE:-} ]]; then
   mount ${LOCAL_DEVICE_FS:+-t $LOCAL_DEVICE_FS} ${LOCAL_DEVICE_FS_OPTS:+-o $LOCAL_DEVICE_FS_OPTS} $LOCAL_DEVICE /data/db
 
-	# HACK: This is a not a great idea.
-	# However, we can assert that our own snapshots were properly made, and cross
-	# our fingers and just hope that the server using this option knows what it
-	# is doing and doesn't spawn two mongos at once.
-	rm -f /data/db/mongod.lock
+  # HACK: This is a not a great idea.
+  # However, we can assert that our own snapshots were properly made, and cross
+  # our fingers and just hope that the server using this option knows what it
+  # is doing and doesn't spawn two mongos at once.
+  rm -f /data/db/mongod.lock
 fi
 
 chown -R mongodb /data/configdb /data/db
@@ -24,7 +24,7 @@ if [[ -n "${REPL_SET_INIT+1}" ]]; then
     OPTIONS="--replSet=$REPL_SET_NAME"
     if [[ "${REPL_SET_INIT}" == "join_arbiter" ]]; then
       OPTIONS="--nojournal --smallfiles ${OPTIONS}"
-		fi
+    fi
   fi
 else
   REPL_SET_INIT="none"
@@ -36,7 +36,6 @@ PID=$!
 trap 'kill -INT $PID' EXIT
 
 # COULDDO: Read the port out of the environment?
-# COULDDO: Read timeout limit from the environment?
 if !  /usr/local/bin/wait-for-it.sh --timeout=$STARTUP_TIMEOUT localhost:27017; then
   echo "Timed out waiting for mongo to start."
   exit $E_UNAVAILABLE
@@ -57,8 +56,7 @@ case "$REPL_SET_INIT" in
     done
 
     for i in "${REPL_SET_MEMBERS[@]}"; do
-      if /usr/local/bin/wait-for-it.sh --timeout=60 ${i}:27017; then
-        mongo --eval "rs.add(\"$i\")"
+      if /usr/local/bin/wait-for-it.sh --timeout=60 ${i}:27017; then mongo --eval "rs.add(\"$i\")"
       else
         echo "Skipping replica set member ${i} due to timeout!"
       fi
