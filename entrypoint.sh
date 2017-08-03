@@ -73,8 +73,8 @@ case "$REPL_SET_INIT" in
 
   reconfig)
     echo "Reconfiguring replica set..."
-    # Try to read the 'uptime' key of the 0th member of the rs status command, and check if it is above 0
-    until [[ $(mongo --quiet --eval 'JSON.stringify(rs.status())' | jq '.members[0].uptime//-1') -gt 0 ]]
+    # Try to read the 'uptime' key and check if it is above 0, also ensure we are in state 10 (removed)
+    until [[ $(mongo --quiet --eval 'JSON.stringify(rs.status())' | jq '.uptime//-1') -gt 0 ]] && [[ $(mongo --quiet --eval 'JSON.stringify(rs.status())' | jq '.state//-1') -eq 10 ]] 
     do
       echo "Waiting for mongo..."
       sleep 5
