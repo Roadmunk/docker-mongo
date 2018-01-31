@@ -30,6 +30,7 @@ Refer to [mongod options documentation](https://docs.mongodb.com/manual/referenc
     * `join_secondary`: wait for this container to become a replica set secondary
     * `join_arbiter`: wait for this container to become a replica set arbiter
     * any other value or unset: no replica set is configured and `REPL_SET_MEMBERS` is ignored
+ * `RECONFIG_REPL_SET_NAME`: the replica set name to use; only used when `REPL_SET_INIT` is `reconfig`.
  * `REPL_SET_MEMBERS`: list of hosts to add as replica set secondaries; only used when `REPL_SET_INIT` is `initiate_add`.
  * `REPL_SET_ARBITER`: host to add as a replica set arbiter; only used when `REPL_SET_INIT` is `initiate_add`.
 
