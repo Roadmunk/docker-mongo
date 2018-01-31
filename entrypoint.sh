@@ -11,26 +11,21 @@ if [[ -n ${LOCAL_DEVICE:-} ]]; then
   # However, we can assert that our own snapshots were properly made, and cross
   # our fingers and just hope that the server using this option knows what it
   # is doing and doesn't spawn two mongos at once.
-  rm -f /data/db/mongod.lock
+  if [${DELETE_MONGO_LOCK}]
+  then
+    rm -f /data/db/mongod.lock
+  fi
 fi
 
-chown -R mongodb /data/configdb /data/db
-
-OPTIONS=
 if [[ -n "${REPL_SET_INIT+1}" ]]; then
-  if [[ "${REPL_SET_INIT}" == "queryable_backup" ]]; then
-    OPTIONS="--queryableBackupMode"
-  else
-    OPTIONS="--replSet=$REPL_SET_NAME"
-    if [[ "${REPL_SET_INIT}" == "join_arbiter" ]]; then
-      OPTIONS="--nojournal --smallfiles ${OPTIONS}"
-    fi
-  fi
+  echo "Not overriding REPL_SET_INIT";
 else
   REPL_SET_INIT="none"
 fi
 
-gosu mongodb mongod $OPTIONS $@ &
+chown -R mongodb /data/configdb /data/db
+
+gosu mongodb mongod "$@" &
 PID=$!
 
 trap 'kill -INT $PID' EXIT
@@ -69,17 +64,6 @@ case "$REPL_SET_INIT" in
         echo "Skipping replica set arbiter ${i} due to timeout!"
       fi
     fi
-    ;;
-
-  reconfig)
-    echo "Reconfiguring replica set..."
-    # Try to read the 'uptime' key and check if it is above 0, also ensure we are in state 10 (removed)
-    until [[ $(mongo --quiet --eval 'JSON.stringify(rs.status())' | jq '.uptime//-1') -gt 0 ]] && [[ $(mongo --quiet --eval 'JSON.stringify(rs.status())' | jq '.state//-1') -eq 10 ]] 
-    do
-      echo "Waiting for mongo..."
-      sleep 5
-    done
-    mongo --eval "rs.reconfig({ _id : '$REPL_SET_NAME', version : 1, members : [ { _id : 1, host: 'localhost' } ]}, { force : true })"
     ;;
 
   join_secondary)
