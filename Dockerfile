@@ -1,4 +1,4 @@
-FROM mongo:4.1.2
+FROM mongo:4.0.1-bionic
 
 ENV TZ=America/Toronto
 RUN echo America/Toronto > /etc/timezone
